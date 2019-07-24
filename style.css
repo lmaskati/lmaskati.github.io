@@ -121,6 +121,11 @@ a:hover {
   flex-flow: row wrap;
 }
 
+.app-block center clickable{
+  width: 100%;
+  flex-flow: row wrap;
+}
+
 .app {
   width: 300px;
   height: 225px; 
