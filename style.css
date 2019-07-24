@@ -85,8 +85,7 @@ a:hover {
 }
 
 .content {
-  width: 80vw;
-  max-width: 45em;
+  width: 100%;
   padding: 1.5em 2em;
   margin: 0 auto;
 }
@@ -120,6 +119,7 @@ a:hover {
 }
 
 .app-block {
+  width: 100%
   flex-flow: row wrap;
 }
 
