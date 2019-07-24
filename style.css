@@ -1,0 +1,409 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  ;
+}
+
+a{
+  text-decoration: none;
+}
+
+b{
+  color: cadetblue;
+  cursor: pointer;
+}
+
+.contact{
+    height: 100px;
+    width: 180px;
+    display: flex;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mybox{
+    display: flex;
+    justify-content: center;
+}
+
+.contact a{
+  padding: 10px;
+}
+
+.contact a img{
+  width: 100%;
+  height: 100%;
+  
+}
+
+.page-wrap {
+  margin: 0;
+  padding: 0;
+  perspective: 1px;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  font-family: 'avenir next', avenir,
+               helvetica, 'helvetica neue',
+               arial, sans-serif;
+  color: black;
+  background: none;
+}
+
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}.clickable {
+  transform: translateZ(0);
+}
+
+a {
+  color: rgb(222, 68, 21);
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(0, 116, 217);
+}
+
+/* Off-screen text for accessibility */
+.screen-reader-text {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.content {
+  width: 80vw;
+  max-width: 45em;
+  padding: 1.5em 2em;
+  margin: 0 auto;
+}
+
+.card {
+  position: relative;
+  padding: 25vh 15px 25vh 2px;
+  min-height: 100%;
+  max-width: 100vw;
+  transform-style: inherit;
+}
+
+.card:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.card,
+.card:before {
+  background: 50% 50% / cover;
+}
+
+
+.group {
+  font-size:20px;
+  text-align: center;
+}
+
+.app-block {
+  flex-flow: row wrap;
+}
+
+.app {
+  width: 300px;
+  height: 225px; 
+  max-width: 50vw;
+  margin: .5em;
+  box-shadow: .3em .3em .3em rgba(0, 0, 0, .4);
+  border: .25em solid white;
+  display: inline-block;
+}
+
+/* Title captions for FCC apps */
+span.title {
+  background: rgba(0,0,0,0.5);
+  color: white;
+  cursor: pointer;
+  display: table;
+}
+
+span.title span {
+  width: 295px;
+  height: 218px;
+  max-width: calc(50vw - 8px);
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.app span.title:hover {
+  opacity: 10;
+}
+
+span.title {
+  background: rgba(0,0,0,0.71);
+  font-size: 0.8em;
+  line-height: 1.2em;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  display: table;
+  opacity: 0;
+  -webkit-transition: opacity 500ms;
+  -moz-transition: opacity 500ms;
+  -o-transition: opacity 500ms;
+  transition: opacity 500ms;
+}
+
+
+#typedtext{
+  font-family: 'Waiting for the Sunrise', cursive; 
+  font-size:30px; 
+  letter-spacing: 6px; 
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0px;
+}
+
+nav{
+  margin-top: 0px;
+  padding: 0;
+}
+
+/* Navbar Styling */
+nav {
+  background: skyblue;
+  position: fixed;
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  margin-bottom: -50px;
+  padding: 5px 0;
+  margin-top: -30px;
+  z-index: 1;
+}
+
+nav li {
+  display: inline-block;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  padding: 22px;
+}
+
+nav a:hover {
+  background: cadetblue;
+}
+
+
+
+.wrapper {
+  margin: 30px;
+}
+
+.masthead {
+  padding-top: 200px;
+  padding-bottom: 150px;
+
+}
+
+
+.masthead-intro {
+  margin-bottom: 0.5em;
+  /* font-family: "Gentium Book Basic", Georgia, serif; */
+  font-size: 40px;
+  text-align: center;
+}
+
+.masthead-heading {
+  margin-top: -0.2em;
+  font-weight: bold;
+  font-size: 120px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-shadow: 8px 8px 2px skyblue;
+  text-align: center;
+  margin-bottom: 0.2px;
+
+}
+
+.container{
+  display:flex;
+  align-items: center;
+}
+
+.intro {
+  max-width: 50%;
+  letter-spacing: 0.5px;
+  position: relative;
+  line-height: 1.4em;
+  font-size: 1.13em;
+  padding: 30px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.pic{
+  height: auto;
+  width: auto;
+  padding: 30px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+  padding: 50px;
+
+}
+
+.pic img{
+  height: auto;
+  width: auto;
+  max-height: 350px;
+  border: 10px solid skyblue;
+}
+
+.intro span:after {
+  content: '\A';
+  white-space: pre;
+}
+
+.line {
+  border-bottom: 1px solid skyblue !important;
+  position: relative;
+}
+.line:before {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  border: 3px solid skyblue;
+  border-width: 3px 20px;
+  top: -3px;
+  border-radius: 3px;
+}
+
+
+.text-center{
+  text-align:center;
+}
+/* Timeline */
+.timeline {
+  border-left: 4px solid skyblue;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
+  margin: 20px auto;
+  letter-spacing: 0.5px;
+  position: relative;
+  line-height: 1.4em;
+  font-size: 1.03em;
+  padding: 10px 15px;
+  list-style: none;
+  text-align: left;
+  max-width: 50%;
+}
+
+.timeline .event {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+.timeline .event:last-of-type {
+
+  border: none;
+}
+.timeline .event:before,
+.timeline .event:after {
+  position: absolute;
+  display: block;
+  top: 0;
+}
+.timeline .event:before {
+  left: -160px;
+  content: attr(data-date);
+  text-align: right;
+  font-weight: 100;
+  font-size: 0.9em;
+  min-width: 120px;
+}
+.timeline .event:after {
+  box-shadow: 0 0 0 4px skyblue;
+  left: -23px;
+  background: cadetblue;
+  border-radius: 50%;
+  height: 11px;
+  width: 11px;
+  content: "";
+  top: 5px;
+
+
+}
+
+.timeline .event:hover:after{
+  background: white;
+}
+
+
+.projects{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin:20px;
+}
+
+.box{
+  width:min-content;
+  padding: 30px;
+  max-width: 250px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  line-height: 1.4em;
+  font-size: 1.03em;
+}
+
+
+.info{
+  margin: 3px;
+}
+
+.projects img{
+  max-width: 250px;
+  margin-bottom: 15px;
+
+}
+
+.topic {
+  font-weight: bold;
+
+}
+
+.projects img:hover{
+  background-color: skyblue;
+  opacity: 0.8;
+}
+
+footer {
+  text-align: center;
+  margin: 15px;
+}
+
+@media screen and (max-width: 650px) {
+  .wrapper {
+    min-width: inherit;
+    min-height: auto;
+    background: #fff;
+  }
+
+
+
+
