@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Things I’ve made</title>
+<meta name="description" content="A running record of things I’ve made: drawings, paintings, glass, laser-cut wood and textiles.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday: a maker's portfolio, quiet so the work leads
+   IDEA a gallery wall and its catalogue: equal frames, small labels, a viewer for each piece
+   PICTURE the work itself, as a grid of equal tiles filling the first screen
+   COLOUR white wall, near-black ink, warm grey mat behind each photo; charcoal at night
+   TYPE Schibsted Grotesk for everything, weight does the work
+   LAYOUT title left with the collection's figures on the right, filters under a rule, then the grid; phone stacks */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#121212);--ink:light-dark(#151515,#ececec);--muted:light-dark(#6e6e6e,#9b9b9b);--line:light-dark(#e4e4e2,#2a2a2a);--mat:light-dark(#f2f1ee,#1c1c1c);--focus:light-dark(#1d4ed8,#8ab4ff);--font:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased;overflow-x:clip}
+:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+button{font:inherit;color:inherit}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(5vw,16px,env(safe-area-inset-left,0px));padding-right:max(5vw,16px,env(safe-area-inset-right,0px))}
+
+header.site{padding-block:clamp(48px,8vw,104px) clamp(28px,4vw,48px)}
+header.site h1{margin:0;font-weight:600;font-size:clamp(2.5rem,6vw,4.25rem);line-height:1.02;letter-spacing:-.035em}
+header.site p{margin:.9rem 0 0;max-width:46ch;color:var(--muted);font-size:1.0625rem}
+
+.filters{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;border-top:1px solid var(--ink);padding-block:.9rem 2.25rem}
+.filters button{background:none;border:0;padding:.35rem 0;cursor:pointer;color:var(--muted);font-size:.9375rem;border-bottom:1.5px solid transparent}
+.filters button span{font-size:.8125rem;margin-left:.3rem;font-variant-numeric:tabular-nums}
+.filters button:hover{color:var(--ink)}
+.filters button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:2.25rem 1.25rem;padding-bottom:6rem}
+@media(max-width:560px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:1.75rem .75rem}}
+.tile{display:block;width:100%;padding:0;border:0;background:none;text-align:left;cursor:pointer}
+.tile[hidden]{display:none}
+.tile .art{display:block;aspect-ratio:4/5;background:var(--mat);overflow:hidden}
+.tile .art img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s ease,opacity .3s}
+.tile:hover .art img{transform:scale(1.03)}
+.tile .title{display:block;margin-top:.7rem;font-weight:500;font-size:.96875rem;line-height:1.3}
+.tile .sub{display:block;margin-top:.15rem;color:var(--muted);font-size:.875rem}
+.tile .more{color:var(--muted);font-size:.8125rem;margin-left:.35rem;font-weight:400}
+
+footer.site{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 2rem;border-top:1px solid var(--line);padding-block:1.5rem 3rem;color:var(--muted);font-size:.875rem}
+
+dialog{width:min(1240px,calc(100vw - 2rem));height:min(880px,calc(100dvh - 2rem));max-width:none;max-height:none;padding:0;border:0;background:var(--bg);color:var(--ink);overflow:hidden;opacity:0;transition:opacity .2s ease}
+dialog[open]{opacity:1}
+dialog::backdrop{background:rgba(8,8,8,.72)}
+@starting-style{dialog[open]{opacity:0}}
+.viewer{display:grid;grid-template-columns:minmax(0,1fr) 360px;height:100%}
+.stage{display:flex;flex-direction:column;background:var(--mat);min-height:0}
+.d-main{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vw,40px);min-height:0}
+.d-main img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.d-thumbs{display:flex;gap:.5rem;padding:0 1rem 1rem;justify-content:center;overflow-x:auto}
+.d-thumbs:empty{display:none}
+.d-thumbs button{flex:0 0 auto;padding:0;cursor:pointer;background:none;border:0;opacity:.55;outline-offset:2px}
+.d-thumbs button[aria-current="true"]{opacity:1;box-shadow:0 0 0 1.5px var(--ink)}
+.d-thumbs img{display:block;width:56px;height:56px;object-fit:cover}
+.panel{display:flex;flex-direction:column;padding:1.25rem 1.75rem 1.5rem;overflow-y:auto;border-left:1px solid var(--line)}
+.panel-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.875rem;font-variant-numeric:tabular-nums}
+.icon-btn{background:none;border:1px solid var(--line);width:40px;height:40px;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.icon-btn:hover{border-color:var(--ink)}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.panel h2{margin:2.25rem 0 0;font-weight:600;font-size:1.875rem;line-height:1.1;letter-spacing:-.025em}
+.panel .blurb{margin:1rem 0 0}
+.panel dl{margin:1.75rem 0 0;display:grid;grid-template-columns:6rem minmax(0,1fr);border-top:1px solid var(--line);font-size:.9375rem}
+.panel dt,.panel dd{margin:0;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.panel dt{color:var(--muted)}
+.panel .notes{margin:1.5rem 0 0;color:var(--muted);font-size:.9375rem}
+.pager{display:flex;gap:.5rem;margin-top:auto;padding-top:2rem}
+@media(max-width:820px){
+  dialog{width:100vw;height:100dvh}
+  .viewer{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;height:auto}
+  dialog{overflow-y:auto}
+  .stage{height:62dvh}
+  .panel{border-left:0;padding:1.25rem max(5vw,16px) calc(1.5rem + env(safe-area-inset-bottom,0px));overflow:visible}
+  .panel-top{position:absolute;top:calc(.75rem + env(safe-area-inset-top,0px));right:.75rem;left:.75rem}
+  .panel-top .count{background:var(--bg);padding:.2rem .55rem}
+  .icon-btn.close{background:var(--bg)}
+  .panel h2{margin-top:0;font-size:1.5rem}
+}
+@media(prefers-reduced-motion:reduce){dialog,.tile .art img{transition:none}.tile:hover .art img{transform:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site">
+    <div>
+      <h1>Things I’ve made</h1>
+      <p>A running record. Not complete, but mostly up to date.</p>
+    </div>
+  </header>
+
+  <nav class="filters" id="filters" aria-label="Filter by medium"></nav>
+
+  <main class="grid" id="grid"></main>
+
+  <footer class="site">
+    <span id="count"></span>
+    <span id="copy"></span>
+  </footer>
+</div>
+
+<dialog id="dlg" aria-labelledby="d-title">
+  <div class="viewer">
+    <div class="stage">
+      <div class="d-main" id="d-main"></div>
+      <div class="d-thumbs" id="d-thumbs" role="group" aria-label="Photos"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-top">
+        <span class="count" id="d-count"></span>
+        <button class="icon-btn close" id="close" type="button" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <h2 id="d-title"></h2>
+      <p class="blurb" id="d-blurb"></p>
+      <dl id="d-dl"></dl>
+      <p class="notes" id="d-notes"></p>
+      <div class="pager">
+        <button class="icon-btn" id="prev" type="button" aria-label="Previous piece"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="icon-btn" id="next" type="button" aria-label="Next piece"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* ------------------------------------------------------------------
+   EDIT SITE_NAME AND THE PROJECTS ARRAY. Everything else renders from them.
+
+   Projects are shown newest year first; within a year, in the order listed here.
+
+   year:   optional. Projects without one go last.
+   images: list of photos, first one is the cover.
+           Either a path:            "img/lamp/lamp-1.jpg"
+           or with alt text:         { src: "img/lamp/lamp-2.jpg", alt: "Lamp switched on at night" }
+           Add pos to choose what the square-ish grid tile keeps when it crops the cover,
+           as a CSS position:        { src: "...", alt: "...", pos: "30% 50%" }
+           Make the files with scripts/process_photos.py from the photos in originals/: it writes
+           each photo plus a smaller "-sm" copy that the grid uses. The viewer shows photos uncropped.
+   technique: optional, e.g. "Flamework". Shown on the tile and in the viewer instead of the medium.
+   materials, tools, notes: optional.
+   slug:   optional. The link name, e.g. yoursite.com/#lamp. Defaults to the title.
+   ------------------------------------------------------------------ */
+const SITE_NAME = "Liyaan Maskati";
+
+/* The pieces shown first, under "Selected", in this order. Use each project's exact title. */
+const SELECTED = [
+  "Chess and Scrabble table",
+  "Belasco Theatre",
+  "Carousel",
+  "Purple swirl paperweight",
+  "Grand piano",
+  "Van Wickle Gates",
+  "Glass pumpkins",
+  "Flowers on a balustrade"
+];
+
+const PROJECTS = [
+  {
+    title: "Chess and Scrabble table",
+    media: ["Woodworking", "Laser cutting"],
+    year: 2025,
+    blurb: "A coffee table on black hairpin legs with a reversible game board set into the top: an inlaid chessboard on one side, and flipped over, a Scrabble board with laser-cut letter tiles. A glass pane sits in a slot in the frame to cover the board. Inspired by a Scrabble coffee table from Charles River Woodworks.",
+    images: [
+      { src: "img/woodwork/table_1.jpg", alt: "Wooden coffee table with an inlaid chessboard under glass and black hairpin legs" },
+      { src: "img/woodwork/table_2.jpg", alt: "The board flipped to its Scrabble side, a grid of laser-cut wooden letter tiles" },
+      { src: "img/woodwork/table_5_process.jpg", alt: "In progress: squares of different woods laid out against a quilting ruler" },
+      { src: "img/woodwork/table_4_process.jpg", alt: "In progress: milled boards with grooves cut along their length" },
+      { src: "img/woodwork/table_6_process.jpg", alt: "In progress: the plywood tray of the table, glued up in the workshop" },
+      { src: "img/woodwork/table_3_process.jpg", alt: "In progress: letter tiles being cut on a laser cutter" }
+    ]
+  },
+  {
+    title: "Rietveld crate chair (study)",
+    media: ["Woodworking"],
+    year: 2019,
+    blurb: "A copy of Gerrit Rietveld’s 1934 Crate chair, made for an architecture class: flat boards screwed together into a slatted seat, tall back and wide arms.",
+    images: [
+      { src: "img/woodwork/chair_2.jpg", alt: "Wooden crate-style armchair made of flat boards with a slatted seat and back" },
+      { src: "img/woodwork/chair_1.jpg", alt: "The crate chair from the side" }
+    ]
+  },
+  {
+    title: "Frogs, turtles and a ladybug",
+    media: ["Glass"],
+    technique: "Flamework",
+    year: 2025,
+    blurb: "Tiny flameworked creatures: three frogs perched on spotted mushrooms, a turtle with a pale shell, a red-shelled turtle and a ladybug.",
+    images: [{ src: "img/glass_blowing/animals.jpg", alt: "Small flameworked glass figures: three frogs on mushrooms, two turtles and a ladybug" }]
+  },
+  {
+    title: "Glass flowers",
+    media: ["Glass"],
+    technique: "Flamework",
+    year: 2025,
+    blurb: "Three flameworked flowers on long stems, in frosted pink, translucent blue and bright yellow.",
+    images: [{ src: "img/glass_blowing/flowers.jpg", alt: "Hand holding three glass flowers on stems: frosted pink, translucent blue and yellow" }]
+  },
+  {
+    title: "Patchwork tote bag",
+    media: ["Textiles"],
+    blurb: "A tote pieced from squares of blue, gold and green prints, with long fabric straps.",
+    images: [{ src: "img/textiles/tote2.jpg", alt: "Patchwork tote bag in blue, gold and green prints hanging in a sewing room" }]
+  },
+  {
+    title: "Donut",
+    media: ["Painting"],
+    year: 2025,
+    blurb: "A pink-frosted donut with sprinkles on a bright yellow canvas.",
+    images: [{ src: "img/paintings/donut.jpg", alt: "Small painting of a pink frosted donut with sprinkles on a yellow background, on an easel" }]
+  },
+  {
+    title: "Croissant",
+    media: ["Painting"],
+    year: 2025,
+    blurb: "A watercolour croissant in a sketchbook, with a soft purple shadow.",
+    images: [{ src: "img/paintings/croissant_watercolour.jpg", alt: "Watercolour painting of a golden croissant in a spiral sketchbook" }]
+  },
+  {
+    title: "Auction drawings",
+    media: ["Pen & ink"],
+    year: 2024,
+    blurb: "Three drawings made for an auction: a glass conservatory, the Parthenon and an old barn.",
+    images: [{ src: "img/pen_and_ink/auction.jpg", alt: "Three pen and ink drawings laid on a table: a glass conservatory, the Parthenon, and a barn" }]
+  },
+  {
+    title: "Gateway of India",
+    media: ["Pen & ink"],
+    year: 2023,
+    blurb: "The Gateway of India in Mumbai, with small figures gathered beneath its arches.",
+    images: [{ src: "img/pen_and_ink/gateway_of_india.jpg", alt: "Pen and ink drawing of the Gateway of India with people beneath the arches" }]
+  },
+  {
+    title: "Applied Math building",
+    media: ["Pen & ink"],
+    year: 2023,
+    blurb: "A Victorian stone house with a round corner tower and a pointed roof, half hidden by a tree.",
+    images: [{ src: "img/pen_and_ink/apma_build.jpg", alt: "Pen and ink drawing of a Victorian stone building with a round tower and a tree beside it" }]
+  },
+  {
+    title: "Engraved Easter eggs",
+    media: ["Laser cutting"],
+    year: 2026,
+    blurb: "Small wooden eggs I made for an Easter egg hunt, each laser engraved with its own zigzag and stripe pattern.",
+    images: [{ src: "img/laser_cut/easter_eggs.jpg", alt: "Four small wooden eggs engraved with zigzag and striped patterns, in an open hand" }]
+  },
+  {
+    title: "Floral tote bag",
+    media: ["Textiles"],
+    year: 2026,
+    blurb: "A lined tote bag in a pink floral print, with cream handles, a zip top and inside pockets.",
+    images: [
+      { src: "img/textiles/tote1.jpg", alt: "Floral print tote bag with cream handles hanging from a door handle" },
+      { src: "img/textiles/tote_interior.jpg", alt: "Inside of the tote bag showing a zip and patterned lining with pockets" }
+    ]
+  },
+  {
+    title: "Veneer cat tissue box",
+    media: ["Laser cutting"],
+    year: 2025,
+    blurb: "A tissue box cover with a geometric cat inlaid in contrasting wood veneers, designed in CAD and laser cut.",
+    images: [{ src: "img/laser_cut/veneer_tissue_box.jpg", alt: "Wooden tissue box with a geometric cat made of light and dark wood veneer pieces" }]
+  },
+  {
+    title: "Quilted pot holder",
+    media: ["Textiles"],
+    year: 2025,
+    blurb: "A pot holder pieced from diagonal strips of purple, green and cream prints, bound in navy with a hanging loop.",
+    images: [{ src: "img/textiles/pot_holder.jpg", alt: "Square quilted pot holder made of diagonal fabric strips with navy binding" }]
+  },
+  {
+    title: "Tea box",
+    media: ["Laser cutting"],
+    blurb: "A wooden tea box with four compartments and a clear lid, with a light wood inlay pattern on the sides. Designed in CAD and laser cut.",
+    images: [{ src: "img/laser_cut/tea_box.jpg", alt: "Wooden tea box with a clear lid showing four compartments of tea bags, with light inlay lines on the sides" }]
+  },
+  {
+    title: "Blue swirl cup",
+    media: ["Glass"],
+    technique: "Glassblowing",
+    year: 2026,
+    blurb: "A blown cup with cobalt blue and white swirled through the glass and a slightly squared rim.",
+    images: [{ src: "img/glass_blowing/another_cup.jpg", alt: "Hand holding a blown glass cup with blue and white swirls" }]
+  },
+  {
+    title: "Ribbed blue cup",
+    media: ["Glass"],
+    technique: "Glassblowing",
+    year: 2026,
+    blurb: "A pale blue blown cup with a twisted rib pattern running around it.",
+    images: [{ src: "img/glass_blowing/cup.jpg", alt: "Light blue blown glass cup with a spiral rib pattern, on a wooden table" }]
+  },
+  {
+    title: "Glass pumpkins",
+    media: ["Glass"],
+    technique: "Glassblowing",
+    year: 2026,
+    blurb: "Two blown pumpkins: a small orange one with a green stem, and a white one speckled with blue and topped with a curled blue stem.",
+    images: [{ src: "img/glass_blowing/pumpkins.jpg", pos: "93% 50%", alt: "Two glass pumpkins in sunlight, one orange with a green stem, one white with blue speckles and a curled blue stem" }]
+  },
+  {
+    title: "Purple swirl paperweight",
+    media: ["Glass"],
+    technique: "Glassblowing",
+    year: 2026,
+    blurb: "An egg-shaped paperweight with purple and white ribbons twisting inside clear glass.",
+    images: [{ src: "img/glass_blowing/paperweight.jpg", alt: "Egg-shaped clear glass paperweight with purple and white swirls inside, on a windowsill" }]
+  },
+  {
+    title: "Green swirl paperweight",
+    media: ["Glass"],
+    technique: "Glassblowing",
+    year: 2026,
+    blurb: "A round paperweight with dark green strands looping through clear glass.",
+    images: [{ src: "img/glass_blowing/paperweight_2.jpg", alt: "Round clear glass paperweight with dark green swirling strands inside, on a windowsill" }]
+  },
+  {
+    title: "Carousel",
+    media: ["Laser cutting"],
+    year: 2026,
+    blurb: "A wooden carousel with horses under a scalloped canopy. I designed every part in CAD, then laser cut it from thin plywood and slotted it together.",
+    images: [
+      { src: "img/laser_cut/carousel.jpg", alt: "Laser-cut wooden carousel with horses and a decorated canopy, on a workbench" },
+      { src: "img/laser_cut/carousel_cad.jpg", alt: "The carousel's 3D model in CAD software on a laptop screen" }
+    ]
+  },
+  {
+    title: "Grand piano",
+    media: ["Laser cutting"],
+    year: 2024,
+    blurb: "A small grand piano with a propped-up lid and keyboard. I designed it in CAD and laser cut it from plywood.",
+    images: [
+      { src: "img/laser_cut/piano.jpg", alt: "Laser-cut wooden grand piano held in front of a laptop showing its 3D model" },
+      { src: "img/laser_cut/piano_back.jpg", alt: "Laser-cut wooden grand piano from the side, showing the curved body" }
+    ]
+  },
+  {
+    title: "Ferris wheel",
+    media: ["Laser cutting"],
+    blurb: "A wooden Ferris wheel with spoked rims and hanging cabins on an A-frame base, designed in CAD and laser cut from plywood.",
+    images: [{ src: "img/laser_cut/ferris.jpg", alt: "Laser-cut wooden Ferris wheel on a stand" }]
+  },
+  {
+    title: "Two cats",
+    media: ["Pen & ink"],
+    year: 2026,
+    blurb: "A black cat and a long-haired grey cat sitting side by side, drawn in ink with fine hatching for the fur.",
+    images: [{ src: "img/pen_and_ink/cats.jpg", alt: "Pen and ink drawing of a black cat and a fluffy grey cat sitting side by side" }]
+  },
+  {
+    title: "Belasco Theatre",
+    media: ["Pen & ink"],
+    year: 2025,
+    blurb: "The Belasco Theatre on Broadway, with the marquee for Maybe Happy Ending and a crowd on the sidewalk below.",
+    images: [{ src: "img/pen_and_ink/broadway.jpg", alt: "Pen and ink drawing of the Belasco Theatre facade with a Maybe Happy Ending marquee and people outside" }]
+  },
+  {
+    title: "Flowers on a balustrade",
+    media: ["Painting"],
+    year: 2025,
+    blurb: "Pink blooms spilling over a white stone balustrade.",
+    images: [{ src: "img/paintings/flowers.jpg", alt: "Painting of clusters of pink flowers behind a white stone balustrade" }]
+  },
+  {
+    title: "Avon theatre",
+    media: ["Pen & ink"],
+    year: 2024,
+    blurb: "The Avon’s marquee and entrance, with the sign welcoming Downton Abbey.",
+    images: [{ src: "img/pen_and_ink/avon.jpg", alt: "Pen and ink drawing of the Avon theatre entrance and marquee" }]
+  },
+  {
+    title: "Blueno",
+    media: ["Pen & ink"],
+    year: 2024,
+    blurb: "The giant teddy bear lamp sculpture, slumped in front of campus buildings.",
+    images: [{ src: "img/pen_and_ink/blueno.jpg", alt: "Pen and ink drawing of a giant teddy bear sculpture wearing a lamp shade, with buildings and trees behind" }]
+  },
+  {
+    title: "Van Wickle Gates",
+    media: ["Pen & ink"],
+    year: 2021,
+    blurb: "The wrought-iron gates between their brick and stone pillars, with bare winter trees behind.",
+    images: [{ src: "img/pen_and_ink/gates.jpg", alt: "Pen and ink drawing of ornate wrought-iron gates between two stone pillars with bare trees" }]
+  },
+  {
+    title: "Sayles Hall",
+    media: ["Pen & ink"],
+    year: 2021,
+    blurb: "The hall’s stone facade, arched windows and steep tower roof.",
+    images: [{ src: "img/pen_and_ink/sayles.jpg", alt: "Pen and ink drawing of Sayles Hall, a stone building with arched windows and a pointed tower" }]
+  },
+  {
+    title: "Hooded portrait",
+    media: ["Pen & ink"],
+    year: 2015,
+    blurb: "A figure in a hood, half hiding their face behind a hand.",
+    images: [{ src: "img/pen_and_ink/portrait.jpg", alt: "Pen and ink portrait of a person in a hood covering the lower half of their face with one hand" }]
+  },
+  {
+    title: "Mount Rainier",
+    media: ["Painting"],
+    blurb: "The mountain above a valley of evergreens, with purple wildflowers in the meadow.",
+    images: [{ src: "img/paintings/rainier.jpg", alt: "Painting of a snow-capped Mount Rainier above forested hills and a meadow of purple wildflowers" }]
+  }
+];
+
+/* ------------------------------------------------------------------ */
+{
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const slugify = (s) => String(s).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "project";
+
+const LIST = (() => {
+  const seen = new Set();
+  return PROJECTS
+    .map((p, order) => ({ ...p, order }))
+    .sort((a, b) => (b.year || 0) - (a.year || 0) || a.order - b.order)
+    .map((p) => {
+      let base = slugify(p.slug || p.title), slug = base, n = 2;
+      while (seen.has(slug)) slug = `${base}-${n++}`;
+      seen.add(slug);
+      const images = (p.images || []).map((x) => typeof x === "string" ? { src: x, alt: p.title } : { alt: p.title, ...x });
+      return { ...p, slug, media: p.media || [], images };
+    });
+})();
+
+const GRID_SIZES = "(max-width: 560px) 50vw, (max-width: 1100px) 33vw, 320px";
+const smallOf = (src) => src.replace(/(\.jpe?g)$/i, "-sm$1");
+function imgTag(im, { lazy = true, small = false, sizes = GRID_SIZES } = {}) {
+  const full = esc(im.src), sm = esc(smallOf(im.src));
+  const src = small && sm !== full
+    ? ` src="${sm}" srcset="${sm} 900w, ${full} 2000w" sizes="${sizes}" data-full="${full}" onerror="this.onerror=null;this.removeAttribute('srcset');this.src=this.dataset.full"`
+    : ` src="${full}"`;
+  const pos = im.pos ? ` style="object-position:${esc(im.pos)}"` : "";
+  return `<img${src} alt="${esc(im.alt)}"${pos}${lazy ? ' loading="lazy"' : ""} decoding="async">`;
+}
+const metaLine = (p, media) => [media, p.year].filter(Boolean).join(", ");
+
+const $ = (id) => document.getElementById(id);
+const grid = $("grid"), filters = $("filters"), dlg = $("dlg"), dMain = $("d-main"), dThumbs = $("d-thumbs");
+const PICKS = SELECTED.map((t) => {
+  const i = LIST.findIndex((p) => p.title === t);
+  if (i < 0) console.warn(`SELECTED: no project titled "${t}"`);
+  return i;
+}).filter((i) => i >= 0);
+let active = PICKS.length ? "Selected" : "All";
+let visible = LIST.map((_, i) => i);
+let current = -1;
+
+const MEDIA = [...new Set(LIST.flatMap((p) => p.media))];
+const inFilter = (m) => m === "Selected" ? PICKS : LIST.map((_, i) => i).filter((i) => m === "All" || LIST[i].media.includes(m));
+const countIn = (m) => inFilter(m).length;
+
+function renderHeader() {
+  $("copy").textContent = `© ${new Date().getFullYear()} ${SITE_NAME}`;
+  document.title = `Things I’ve made · ${SITE_NAME}`;
+}
+
+function renderTiles() {
+  grid.innerHTML = LIST.map((p, i) => {
+    const cover = p.images[0];
+    const more = p.images.length > 1 ? `<span class="more">${p.images.length} photos</span>` : "";
+    return `<button class="tile" type="button" data-i="${i}">
+      <span class="art">${cover ? imgTag(cover, { small: true }) : ""}</span>
+      <span class="title">${esc(p.title)}${more}</span>
+      <span class="sub">${esc(metaLine(p, p.technique || p.media[0]))}</span>
+    </button>`;
+  }).join("");
+}
+
+function renderFilters() {
+  filters.innerHTML = [...(PICKS.length ? ["Selected"] : []), "All", ...MEDIA].map((m) =>
+    `<button type="button" data-m="${esc(m)}" aria-pressed="${m === active}">${esc(m)}<span>${countIn(m)}</span></button>`).join("");
+}
+
+function applyFilter() {
+  visible = inFilter(active);
+  const tiles = [...grid.querySelectorAll(".tile")];
+  const byIndex = new Map(tiles.map((t) => [+t.dataset.i, t]));
+  const shown = new Set(visible);
+  // Put tiles in display order so reading and tabbing follow what's on screen.
+  [...visible, ...tiles.map((t) => +t.dataset.i).filter((i) => !shown.has(i))]
+    .forEach((i) => { const t = byIndex.get(i); t.hidden = !shown.has(i); grid.appendChild(t); });
+  filters.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.m === active)));
+  $("count").textContent = active === "Selected"
+    ? `${visible.length} selected of ${LIST.length} pieces`
+    : `${visible.length} ${visible.length === 1 ? "piece" : "pieces"}` + (active === "All" ? "" : ` in ${active}`);
+}
+
+function showImage(p, k) {
+  dMain.innerHTML = imgTag(p.images[k], { lazy: false });
+  dThumbs.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-current", String(j === k)));
+}
+
+function fillDialog(i) {
+  const p = LIST[i];
+  current = i;
+  dThumbs.innerHTML = p.images.length > 1
+    ? p.images.map((im, k) => `<button type="button" data-k="${k}" aria-label="Photo ${k + 1} of ${p.images.length}">${imgTag(im, { small: true, sizes: "56px" })}</button>`).join("")
+    : "";
+  if (p.images.length) showImage(p, 0); else dMain.innerHTML = "";
+  const pos = visible.indexOf(i);
+  $("d-count").textContent = pos >= 0 ? `${pos + 1} / ${visible.length}` : "";
+  $("d-title").textContent = p.title;
+  $("d-blurb").textContent = p.blurb || "";
+  const rows = [["Medium", p.media.join(", ")], ["Technique", p.technique], ["Year", p.year], ["Materials", p.materials], ["Tools", p.tools]];
+  $("d-dl").innerHTML = rows.filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("");
+  $("d-notes").textContent = p.notes || "";
+  $("d-notes").hidden = !p.notes;
+  const many = visible.length > 1;
+  $("prev").hidden = $("next").hidden = !many;
+}
+
+/* Links: opening a piece sets #slug so it can be shared; the back button closes it. */
+let pushedEntry = false, closingFromNav = false;
+
+function openProject(i, { push = true } = {}) {
+  fillDialog(i);
+  const hash = `#${LIST[i].slug}`;
+  if (push && location.hash !== hash) {
+    if (dlg.open) history.replaceState(null, "", hash);
+    else { history.pushState(null, "", hash); pushedEntry = true; }
+  }
+  if (!dlg.open) dlg.showModal();
+}
+
+function step(d) {
+  if (!visible.length) return;
+  const pos = visible.indexOf(current);
+  const next = visible[(pos + d + visible.length) % visible.length];
+  openProject(next);
+}
+
+function route() {
+  const slug = decodeURIComponent(location.hash.slice(1));
+  const i = LIST.findIndex((p) => p.slug === slug);
+  if (i >= 0) openProject(i, { push: false });
+  else if (dlg.open) { closingFromNav = true; dlg.close(); }
+}
+
+dlg.addEventListener("close", () => {
+  current = -1;
+  if (closingFromNav) { closingFromNav = false; pushedEntry = false; return; }
+  if (pushedEntry) { pushedEntry = false; history.back(); }
+  else if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+});
+window.addEventListener("hashchange", route);
+dlg.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+  if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
+});
+dThumbs.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b && current >= 0) showImage(LIST[current], +b.dataset.k);
+});
+grid.addEventListener("click", (e) => {
+  const t = e.target.closest(".tile");
+  if (t) openProject(+t.dataset.i);
+});
+filters.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b) { active = b.dataset.m; applyFilter(); }
+});
+$("close").addEventListener("click", () => dlg.close());
+$("prev").addEventListener("click", () => step(-1));
+$("next").addEventListener("click", () => step(1));
+dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+
+renderHeader();
+renderTiles();
+renderFilters();
+applyFilter();
+route();
+}
+</script>
+</body>
+</html>
